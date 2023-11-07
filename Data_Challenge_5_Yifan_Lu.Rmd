@@ -1,0 +1,129 @@
+---
+title: "Data Challenge 4"
+author: "Yifan Lu"
+output:
+  html_document:
+    fig_height: 4.5
+    fig_width: 8
+  pdf_document:
+    fig_height: 3.5
+    fig_width: 3.5
+  word_document:
+    toc: no
+---
+https://github.com/cclyfblink/Data_Challenge_5_Yifan_Lu
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+```{r}
+## load in the required libraries 
+library(tidyverse)
+
+## disable scientific notation
+options(scipen = 999)
+```
+
+## Problem 1
+Use the gene expression data in Ch10Ex11.csv that is provided for you on Canvas. This is gene expression data that consists of 40 tissue samples with measurements on 1,000 genes. The first 20 samples are from healthy patients, while the second 20 are from a diseased group.
+
+Load the data – note that there is no header so you will need to read this in without one. Note that rows in this dataset represent genes and columns subjects. You will need to transpose the data using the function t() before you cluster (as we would like to cluster subjects).
+Scale the data.
+Using the code from the lecture notes and the kmeans function in R, produce the associated elbow plot (i.e., a plot of within-cluster sum of squares vs. cluster size). You can use 1 through 15 for your k values. Given your plot, what is the appropriate number of clusters for the data? Why?
+Cluster the scaled data using the kmeans function in R. Try this with the number of clusters you concluded in Step 3 and 50 iterations.
+Summarize the results in a contingency table. A contingency table is a tabular representation of categorical data that typically shows the frequency of the combinations of the two variables (i.e., an m by n table). Here we would like to show a table of our clustering versus the true disease status of the subjects. Create a variable of the disease status for the 40 tissue samples. Use the clustering that you obtained in the previous step. Create a table of the two variables using table(). Comment on what you observe.
+Don’t forget to set a seed number before running any function that introduces randomness!
+```{r}
+# load in the data
+data <- read.csv("Ch10Ex11.csv", header = FALSE) |> t()
+scaled_data <- scale(data)
+
+# code in the lecture notes
+set.seed(123)
+wss <- function(k, data) {
+  kmeans(data, k, nstart = 50)$tot.withinss
+}
+k_values <- 1:15
+wss_values <- map_dbl(k_values, wss, data = scaled_data)
+
+wss_values <- tibble(wss = wss_values,
+                     k = k_values)
+ggplot(wss_values, aes(x = k, y = wss)) + geom_point() + geom_line()
+
+```
+Given the elbow plot, the appropriate number of clusters for the data is 2. Because the elbow plot shows that the within-cluster sum of squares decreases dramatically from 1 to 2, and then decreases with constant slope from 2 to 15. 
+
+```{r}
+# cluster the data using kmeans()
+k_means_results <- kmeans(scaled_data, centers = 2, nstart = 50)
+k_means_results$cluster
+
+```
+```{r}
+disease <- c(rep("Healthy", 20), rep("Diseased", 20))
+
+# create a contingency table of the clustering versus the disease status
+table(k_means_results$cluster, disease)
+```
+If we assume that the clustering results are the true disease status, then the contingency table shows that all the healthy patients are clustered into one group, and all the diseased patients are clustered into another group.
+
+
+## Problem 2
+Perform hierarchical clustering on the same scaled data set.
+
+Calculate the Euclidean distance between the observations.
+Perform hierarchical clustering on the data using the below linkages, and plot the dendograms for each linkage:
+complete linkage
+single linkage
+average linkage
+Determine clusters for 2 groups from all three methods using cutree().
+Make three contingency tables for the results. Comment on what you observe.
+```{r}
+# calculate the Euclidean distance between the observations
+distances <- dist(scaled_data, method = "euclidean")
+
+```
+
+```{r}
+# perform hierarchical clustering on the data using the below linkages
+# complete linkage
+hc_complete <- hclust(distances, method = "complete")
+plot(hc_complete)
+# single linkage
+hc_single <- hclust(distances, method = "single")
+plot(hc_single)
+# average linkage
+hc_average <- hclust(distances, method = "average")
+plot(hc_average)
+```
+
+```{r}
+# determine clusters for 2 groups from all three methods using cutree()
+# complete linkage
+cutree(hc_complete, k = 2)
+# single linkage
+cutree(hc_single, k = 2)
+# average linkage
+cutree(hc_average, k = 2)
+```
+
+```{r}
+# make three contingency tables for the results
+# complete linkage
+table(cutree(hc_complete, k = 2), disease)
+# single linkage
+table(cutree(hc_single, k = 2), disease)
+# average linkage
+table(cutree(hc_average, k = 2), disease)
+
+```
+We can see that all three linkage methods have the same contingency table. If we assume that the clustering results are the true disease status, then the contingency table shows that all the healthy patients are clustered into one group, and all the diseased patients are clustered into another group.
+
+
+## Problem 3
+Write a few sentences commenting on the results you obtained in Problems 1 and 2.
+
+**Answer:**
+In problem 1 and 2, if our assumption on the disease status of the tissues are correct, then both k-means and hierarchical clustering methods can cluster the healthy and diseased patients into two groups. 
