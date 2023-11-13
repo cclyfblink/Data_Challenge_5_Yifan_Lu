@@ -92,13 +92,13 @@ distances <- dist(scaled_data, method = "euclidean")
 # perform hierarchical clustering on the data using the below linkages
 # complete linkage
 hc_complete <- hclust(distances, method = "complete")
-plot(hc_complete)
+plot(hc_complete, main = "Complete Linkage")
 # single linkage
 hc_single <- hclust(distances, method = "single")
-plot(hc_single)
+plot(hc_single, main = "Single Linkage")
 # average linkage
 hc_average <- hclust(distances, method = "average")
-plot(hc_average)
+plot(hc_average, main = "Average Linkage")
 ```
 
 ```{r}
