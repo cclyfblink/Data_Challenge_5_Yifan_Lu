@@ -129,4 +129,4 @@ We can see that all three linkage methods have the same contingency table. If we
 Write a few sentences commenting on the results you obtained in Problems 1 and 2.
 
 **Answer:**
-In problem 1 and 2, if our assumption on the disease status of the tissues are correct, then both k-means and hierarchical clustering methods can cluster the healthy and diseased patients into two groups. 
+In problem 1 and 2, if our assumption on the disease status of the tissues are correct, then both k-means and hierarchical clustering methods can cluster the healthy and diseased patients into the same two groups. This might indicates that the tissue of diseased and healthy have clear gene expression differences. The elbow plot may also corroborate this, there are no significant slope change in WSS after k = 2 clusters. Besides, those 3 dendrograms also have higher height at k = 2 clusters, which also indicates that the data can be clustered into 2 groups.
