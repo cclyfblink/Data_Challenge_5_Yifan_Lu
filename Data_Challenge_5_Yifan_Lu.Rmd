@@ -51,7 +51,6 @@ wss_values <- map_dbl(k_values, wss, data = scaled_data)
 wss_values <- tibble(wss = wss_values,
                      k = k_values)
 ggplot(wss_values, aes(x = k, y = wss)) + geom_point() + geom_line()
-
 ```
 
 Given the elbow plot, the appropriate number of clusters for the data is 2. Because the elbow plot shows that the within-cluster sum of squares decreases dramatically from 1 to 2, and then decreases with constant slope from 2 to 15. 
@@ -85,7 +84,6 @@ Make three contingency tables for the results. Comment on what you observe.
 ```{r}
 # calculate the Euclidean distance between the observations
 distances <- dist(scaled_data, method = "euclidean")
-
 ```
 
 ```{r}
@@ -119,7 +117,6 @@ table(cutree(hc_complete, k = 2), disease)
 table(cutree(hc_single, k = 2), disease)
 # average linkage
 table(cutree(hc_average, k = 2), disease)
-
 ```
 
 We can see that all three linkage methods have the same contingency table. If we assume that the clustering results are the true disease status, then the contingency table shows that all the healthy patients are clustered into one group, and all the diseased patients are clustered into another group.
